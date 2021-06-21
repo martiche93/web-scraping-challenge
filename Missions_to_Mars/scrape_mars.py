@@ -1,123 +1,147 @@
-from bs4 import BeautifulSoup as bs
-import requests
 from splinter import Browser
+from bs4 import BeautifulSoup as bs
 import pandas as pd
 import time
+import requests
 from webdriver_manager.chrome import ChromeDriverManager
 
 
 def init_browser():
-    executable_path = {'executable_path': 'chromedrive.exe'}
-    browser = Browser('chrome', **executable_path, headless=False)
-    return Browser
+    executable_path = {"executable_path": "/usr/local/bin/chromedriver"}
+    return Browser("chrome", **executable_path, headless=True)
 
 
 def scrape():
     browser = init_browser()
 
-    mars_data = {}
+# -------------------------------------------------
+# Part One - Mars News Scraping
+# -------------------------------------------------
 
-# Part One
-    url = 'https://redplanetscience.com/'
-    browser.visit(url)
+    MarsNews_url = "https://redplanetscience.com/"
+    print("Scraping Mars News...")
+
+    browser.visit(MarsNews_url)
+    time.sleep(1)
+
     html = browser.html
     soup = bs(html, 'html.parser')
 
-    tresults = soup.find('div', class_='content_title')
+    last_div = soup.find('div', class_='list_text')
+    news_titles = last_div.find('div', class_='content_title').text
+    news_p = last_div.find('div', class_='article_teaser_body').text
 
-    news_titles = []
-    for result in tresults:
-        if (result.a):
-            if (result.a.text):
-                news_titles.append(result)
+    print("Mars News: Scraping Complete!")
 
-    finalnewstitles = []
-    for x in range(6):
-        var = news_titles[x].text
-        newvar = var.strip('\n\n')
-        finalnewstitles.append(newvar)
+# -------------------------------------------------
+# Part Two - Featured Image Scraping
+# -------------------------------------------------
 
-    presults = soup.find('div', class_='article_teaser_body')
+    JPL_url = 'https://spaceimages-mars.com'
+    print('Scraping JPL Featured Space Image...')
 
-    news_p = []
-    for x in range(6):
-        var = presults[x].text
-        newvar = var.strip('\n\n')
-        news_p.append(newvar)
+    browser.visit(JPL_url)
+    time.sleep(1)
 
-    mars_data['news_titles'] = finalnewstitles
-    mars_data['news_p'] = news_p
-
-# Part Two
-    url = 'https://spaceimages-mars.com'
-    browser.visit(url)
-    browser.links.find_by_partial_text('FULL IMAGE').click()
     html = browser.html
     soup = bs(html, 'html.parser')
 
-    img_url = soup.find('img', class_="fancybox-image").get("src")
-    featured_image_url = url + img_url
-    featured_image_url
+    carousel = soup.find('div', class_='carousel_container')
+    featuredimage_title = carousel.find('a')['data-title']
 
-# Part Three
-    url = "https://galaxyfacts-mars.com"
-    df_facts = pd.read_html(url)
-    df_facts[1]
+    browser.find_by_id('full_image').click()
+    time.sleep(1)
 
-    mars_df = df_facts[1]
-    mars_df.columns = ['Description', 'Values']
-    mars_df.set_index = ['Description']
+    if browser.is_element_visible_by_css('div.fancybox-title') == False:
+        base_url = 'https://www.jpl.nasa.gov/'
+        image_url = carousel.find('a')['data-fancybox=href']
+        featuredimage_url = base_url + image_url
 
-    html_table = mars_df.to_html()
-    mars_df.to_html('mars_table.html')
+    else:
+        base_url = 'https:'
 
-# Part Four
-    executable_path = {'executable_path': ChromeDriverManager().install()}
-    browser = Browser('chrome', **executable_path, headless=False)
-    url = "https://marshemispheres.com/index.html"
-    browser.visit(url)
+        browser.links.find_by_partial_text('more info').click()
+        time.sleep(1)
 
-    nextpage_urls = []
-    imgtitles = []
-    base_url = 'https://marshemispheres.com/'
+        img_detail_html = browser.html
+        imagesoup = bs(img_detail_html, 'html.parser')
+        download_div = imagesoup.find_all('div', class_='download_tiff')[1]
+        fullsize_img = download_div.find('a')['href']
+
+        featuredimage_url = base_url + fullsize_img
+
+    print("JPL Featured Space Image: Scraping Complete!")
+
+# -------------------------------------------------
+# Part Three - Mars Facts Scraping
+# -------------------------------------------------
+
+    MarsFacts_url = 'https://galaxyfacts-mars.com'
+    print('Scraping Mars Facts...')
+
+    browser.visit(MarsFacts_url)
+    time.sleep(1)
 
     html = browser.html
-    soup = bs(html, "html.parser")
-    divs = soup.find_all('div', class_='description')
+    table = pd.read_html(html)
 
-    counter = 0
-    for div in divs:
-        link = div.find('a')
-        href = link['href']
-        img_title = div.a.find('h3')
-        imgtitles.append(img_title)
-        next_page = base_url + href
-        nextpage_urls.append(next_page)
-        counter = counter+1
-        if (counter == 4):
-            break
+    mars_df = table[0]
+    mars_df.columns = ['Description', 'Value']
 
-    images = []
-    for nextpage_url in nextpage_urls:
-        url = nextpage_url
-        browser.visit(url)
-        html = browser.html
-        soup = bs(html, 'html.parser')
-        link2 = soup.find('img', class_='wide-image')
-        forfinal = link2['src']
-        full_img = base_url + forfinal
-        images.append(full_img)
-        nextpage_urls = []
+    html_table = mars_df.to_html(index=False, header=False, border=0,
+                                 classes='table table-sm table-striped font-weight-light')
+    print('Mars Facts: Scraping Complete!')
+
+# -------------------------------------------------
+# Part Four - Mars Hemisphere Images Scraping
+# -------------------------------------------------
+
+    Hemisphere_url = 'https://marshemispheres.com/index.html'
+    print('Scraping Mars Hemisphere Images...')
+
+    browser.visit(Hemisphere_url)
+    time.sleep(1)
+
+    html = browser.html
+    soup = bs(html, 'html.parser')
+
+    divs = soup.find_all('div', class_='item')
 
     hemis_photo_urls = []
-    cerberus = {'title': imgtitles[0], 'img_url': images[0]}
-    schiaparelli = {'title': imgtitles[1], 'img_url': images[1]}
-    syrtis = {'title': imgtitles[2], 'img_url': images[2]}
-    valles = {'title': imgtitles[3], 'img_url': images[3]}
-    hemis_photo_urls = [cerberus, schiaparelli, syrtis, valles]
 
-    return mars_data
+    for div in divs:
+        hemis_link = browser.find_by_css('a.product-item h3')
+        hemis_link[div].click()
+        time.sleep(1)
 
+        img_detail_html = browser.html
+        imagesoup = bs(img_detail_html, 'html.parser')
 
-if __name__ == "__main__":
-    scrape()
+        base_url = 'https://marshemispheres.com/'
+
+        hem_url = imagesoup.find('img', class_='wide-image')['src']
+
+        img_url = base_url + hem_url
+
+        img_title = browser.find_by_css('.title').text
+
+        hemis_photo_urls.append({'title': img_title, 'img_url': img_url})
+
+        browser.back()
+
+    browser.quit()
+    print("Mars Hemisphere Images: Scraping Complete!")
+
+# -------------------------------------------------
+# Create a dictionary to store values
+# -------------------------------------------------
+
+    scraped_data = {
+        "news_titles": news_titles,
+        "news_p": news_p,
+        "featuredimage_title": featuredimage_title,
+        "mars_facts_table": html_table,
+        "hemisphere_images": hemis_photo_urls
+    }
+
+    return scraped_data

@@ -21,9 +21,8 @@
 
     <!---News scraping-->
     <div class="container">
-      <h2 style="color:rgb(184, 196, 27); font-family:Impact">Latest Mars News</h2>
-      <h4 style="color:rgb(121, 23, 6)">{{data.news_titles[0]}}</h4>
-      <p>{{data.news_p[0]}}</p>
+      <h2 style="color:rgb(184, 196, 27); font-family:Impact">{{news_titles[0]}}</h2>
+      <h4 style="color:rgb(121, 23, 6)"> <p>{{news_p[0]}}</p>
     </div>
 
     <!---Featured Image-->
@@ -31,7 +30,7 @@
       <div class='row'>
         <div class="col-lg-8 col-md-8 col-sm-6 col-xm-12">
           <h3 style="color:rgb(207, 92, 10);font-family:Impact;text-align: center;">Featured Mars Image</h3>
-          <img src="{{data.featured_image_url}}" style="max-width:100%;" alt="mars image">
+          <img src={{"featured_image_url[0]"}} style="max-width:100%;" alt="mars image">
         </div>
         <div class="col-lg-4 col-md-4 col-sm-6 col-xm-12">
           <div class="card text-white bg-dark mb-3" style="max-width: 18rem;">
@@ -41,7 +40,7 @@
           </div>
           <div>
             <h3 style="color:rgb(134, 16, 81); font-family:Impact">Mars Facts</h3>
-            <table>{{ data.html_table|safe}}</table>
+            <table src={{"table.html|safe"}}></table>
           </div>
         </div>
 
@@ -89,6 +88,8 @@
         </div>
       </div>
     </div>
+    <script src="../test.py"></script>
+    <script src="../app.py"></script>
 </body>
 
 </html>
