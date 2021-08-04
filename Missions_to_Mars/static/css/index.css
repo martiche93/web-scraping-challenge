@@ -1,0 +1,106 @@
+html,
+body {
+    background-color: #5e0925;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+}
+
+/* Styling the wrapper */
+.wrapper {
+    position: relative;
+    min-height: 100%;
+    padding-bottom: 30px;
+    overflow: auto;
+}
+
+/* Styling the footer */
+.footer {
+    position: relative;
+    top: 100px;
+    background-image: url("../../../Images/space1.jpeg");
+    min-height: 230px;
+    margin-top: 20px;
+    background-attachment: relative;
+    background-position: center;
+}
+
+/* Styling the header parallax */
+.parallax-header {
+    background-image: url("../../../Images/mars1.jpeg");
+    min-height: 400px;
+    margin-top: 20px;
+    margin: 0;
+    padding: 10px;
+    background-attachment: fixed;
+    background-position: top;
+    background-size: cover;
+}
+
+.parallax-header h1 {
+    position: relative;
+    text-align: center;
+    top: 150px;
+    text-decoration: bold;
+    font-size: 75px;
+    color: #5e0925;
+    font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+}
+
+.parallax-header a {
+    position: relative;
+    top: 150px;
+}
+
+h2.heading {
+    position: relative;
+    color: white;
+    left: 100px;
+    top: 10px;
+}
+
+h4.title {
+    position: relative;
+    color: white;
+    left: 100px;
+    top: 30px;
+}
+
+p {
+    position: relative;
+    color: white;
+    left: 100px;
+    top: 50px;
+}
+
+h2.heading1 {
+    position: relative;
+    color: white;
+    left: 100px;
+    top: 100px;
+}
+
+h2.heading2 {
+    position: absolute;
+    color: white;
+    right: 100px;
+    bottom: 10px;
+}
+
+h3 {
+    position: absolute;
+    color: white;
+    right: 160px;
+    top: 2px;
+}
+
+h1.heading3 {
+    position: relative;
+    top: 100px;
+    text-align: center;
+}
+
+.border {
+    position: relative;
+    top: 100px;
+}
