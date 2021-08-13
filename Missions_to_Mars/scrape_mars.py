@@ -54,7 +54,7 @@ def scrape():
     featured_soup = bs(featured_html, 'html.parser')
 
     # Find image url and assign to a variable
-    images = featured_soup.find_all("img", class_="header image fade-in")
+    images = featured_soup.find_all("img", class_="headerimage fade-in")
     for image in images:
         featured_image_url = (image["src"])
 
@@ -76,7 +76,7 @@ def scrape():
 
     # Convert table to df
     table_df = pd.DataFrame(tables[1])
-    table_df.columns = ["Description", "Value"]
+    table_df.columns = ["Description", "Values"]
     table_df
 
     # Convert df to html table string
@@ -97,28 +97,28 @@ def scrape():
     browser.visit(images_url)
 
     # Set up list for hemispheres and entries
-    hemispheres = ["Cerberus", "Schiaparelli", "Syrtis Major", "Valles Mariners"]
+    hemispheres = ["Cerberus", "Schiaparelli", "Syrtis Major", "Valles Marineris"]
     hemisphere_entries = []
 
     for hemi in hemispheres:
 
         # Click hemisphere link
-        browser.links.find_by_partial_text(hemi + "Hemisphere Enhanced").click()
+        browser.links.find_by_partial_text(hemi + " Hemisphere Enhanced").click()
 
-    # Scrape page into Soup
-    images_html = browser.html
-    images_soup = bs(images_html, 'html.parser')
+        # Scrape page into Soup
+        images_html = browser.html
+        images_soup = bs(images_html, 'html.parser')
 
-    # Find all the image links
-    li = images_soup.find_all("lli")
-    a = li[0].find("a")
-    image_url = images_url+a["href"]
+        # Find all the image links
+        li = images_soup.find_all("li")
+        a = li[0].find("a")
+        image_url = images_url+a["href"]
 
-    # Add urls to dictionary
-    hemisphere_entries.append({"title": hemi + " Hemisphere Enhanced", "img_url": image_url})
+        # Add urls to dictionary
+        hemisphere_entries.append({"title": hemi + " Hemisphere Enhanced ", "img_url": image_url})
 
-    # Click the 'back' button
-    browser.links.find_by_partial_text("Back").clilck()
+        # Click the 'back' button
+        browser.links.find_by_partial_text("Back").click()
 
     # Close the browser after scraping
     browser.quit()
